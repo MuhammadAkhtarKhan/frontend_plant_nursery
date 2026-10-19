@@ -23,10 +23,12 @@ export interface OrderItemResponse {
 export interface OrderResponse {
   id: string;
   orderNumber: string;
+  orderType?: number;
   totalAmount: number;
   paymentMethod: number;
   paymentStatus: number;
   orderStatus: number;
+  createdAt?: string;
   items: OrderItemResponse[];
 }
 
