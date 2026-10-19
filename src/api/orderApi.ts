@@ -48,3 +48,12 @@ export async function createPosOrder(
 
   return response.data.data;
 }
+
+export async function getMyOrders(): Promise<OrderResponse[]> {
+  const response = await axiosInstance.get<ApiResponse<OrderResponse[]>>(
+    "/Order/my",
+  );
+
+  return response.data.data;
+}
+
