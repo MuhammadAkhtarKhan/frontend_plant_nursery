@@ -1,4 +1,5 @@
-
+import Receipt from "./components/pos/Receipt";
+import type { OrderResponse } from "./api/orderApi";
 import { useEffect, useMemo, useState } from "react";
 import {
   Search,
@@ -10,8 +11,9 @@ import {
   CreditCard,
   Banknote,
   Sprout,
-  Receipt,
+
   RefreshCw,
+  ReceiptTextIcon,
 } from "lucide-react";
 import { getPlants } from "./api/plantApi";
 import { createPosOrder } from "./api/orderApi";
@@ -63,6 +65,7 @@ function PosApp() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [checkoutSuccess, setCheckoutSuccess] = useState("");
+  const [completedOrder, setCompletedOrder] = useState<OrderResponse | null>(null);
 
   // Load real inventory from the backend.
   async function loadPlants() {
@@ -189,11 +192,10 @@ function PosApp() {
         })),
       });
 
-      // The order succeeded, so clear the cart now.
+      setCompletedOrder(order);
       setCart([]);
-      setCheckoutSuccess(
-        `Sale completed successfully. Order: ${order.orderNumber}`,
-      );
+      setCheckoutError("");
+      setCheckoutSuccess(`Sale completed: ${order.orderNumber}`);
 
       // Refresh inventory separately. A refresh failure must not
       // make a successful sale appear to have failed.
@@ -224,7 +226,7 @@ function PosApp() {
 
         setCheckoutError(
           apiError.response?.data?.message ??
-            "The sale could not be completed. Check stock and try again.",
+          "The sale could not be completed. Check stock and try again.",
         );
       } else {
         setCheckoutError(
@@ -543,7 +545,7 @@ function PosApp() {
               {checkoutLoading ? (
                 <RefreshCw className="spin-icon" size={19} />
               ) : (
-                <Receipt size={19} />
+                <ReceiptTextIcon size={19} />
               )}
               {checkoutLoading ? "Processing Sale..." : "Complete Sale"}
             </button>
@@ -555,6 +557,12 @@ function PosApp() {
           </div>
         </aside>
       </main>
+      {completedOrder && (
+        <Receipt
+          order={completedOrder}
+          onClose={() => setCompletedOrder(null)}
+        />
+      )}
     </div>
   );
 }
@@ -571,7 +579,7 @@ function App() {
 
       return Boolean(
         token &&
-          roles.some((role) => role.toLowerCase() === "cashier"),
+        roles.some((role) => role.toLowerCase() === "cashier"),
       );
     } catch {
       return false;
