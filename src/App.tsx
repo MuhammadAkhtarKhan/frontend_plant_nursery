@@ -1,3 +1,5 @@
+import SalesHistory from "./components/pos/SalesHistory";
+import SalesDashboard from "./components/pos/SalesDashboard";
 import Receipt from "./components/pos/Receipt";
 import type { OrderResponse } from "./api/orderApi";
 import { useEffect, useMemo, useState } from "react";
@@ -14,6 +16,8 @@ import {
 
   RefreshCw,
   ReceiptTextIcon,
+  ReceiptText,
+  TrendingUp,
 } from "lucide-react";
 import { getPlants } from "./api/plantApi";
 import { createPosOrder } from "./api/orderApi";
@@ -53,6 +57,7 @@ function mapApiPlants(apiPlants: ApiPlant[]): Plant[] {
 }
 
 function PosApp() {
+  const [currentPage, setCurrentPage] = useState<"pos" | "sales" | "dashboard">("pos");
   const [plants, setPlants] = useState<Plant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -237,10 +242,35 @@ function PosApp() {
       setCheckoutLoading(false);
     }
   }
-
+  if (currentPage === "sales") {
+    return (
+      <SalesHistory onBack={() => setCurrentPage("pos")} />
+    );
+  }
+  if (currentPage === "dashboard") {
+    return (
+      <SalesDashboard onBack={() => setCurrentPage("pos")} />
+    );
+  }
   return (
     <div className="pos-app">
       <header className="topbar">
+        <button
+          type="button"
+          className="sales-history-nav-button"
+          onClick={() => setCurrentPage("sales")}
+        >
+          <ReceiptText size={18} />
+          Sales History
+        </button>
+        <button
+          type="button"
+          className="sales-history-nav-button"
+          onClick={() => setCurrentPage("dashboard")}
+        >
+          <TrendingUp size={18} />
+          Dashboard
+        </button>
         <div className="brand">
           <div className="brand-icon">
             <Sprout size={25} />
