@@ -166,6 +166,46 @@
 .dashboard-search input::placeholder {
   color: #9ca3af;
 }
+.dashboard-chart-card {
+  margin: 24px 0;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.dashboard-chart-header {
+  margin-bottom: 20px;
+}
+
+.dashboard-chart-header h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.dashboard-chart-header p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.dashboard-chart {
+  width: 100%;
+  height: 300px;
+}
+
+@media (max-width: 600px) {
+  .dashboard-chart-card {
+    padding: 16px;
+  }
+
+  .dashboard-chart {
+    height: 250px;
+  }
+}
 
 @media (max-width: 600px) {
   .dashboard-date-filter {

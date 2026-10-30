@@ -1,4 +1,12 @@
-
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
 import { useEffect, useMemo, useState } from "react";
 import {
     ArrowLeft,
@@ -106,6 +114,45 @@ function SalesDashboard({ onBack }: SalesDashboardProps) {
                 )
         };
     }, [orders, dateFilter]);
+    const chartData = useMemo(() => {
+        const days = Array.from({ length: 7 }, (_, index) => {
+            const date = new Date();
+
+            date.setDate(date.getDate() - (6 - index));
+            date.setHours(0, 0, 0, 0);
+
+            return date;
+        });
+
+        return days.map((date) => {
+            const nextDay = new Date(date);
+            nextDay.setDate(nextDay.getDate() + 1);
+
+            const dailyOrders = orders.filter((order) => {
+                if (order.orderStatus === 5 || !order.createdAt) {
+                    return false;
+                }
+
+                const orderDate = new Date(order.createdAt);
+
+                return orderDate >= date && orderDate < nextDay;
+            });
+
+            const sales = dailyOrders.reduce(
+                (sum, order) => sum + Number(order.totalAmount || 0),
+                0,
+            );
+
+            return {
+                day: date.toLocaleDateString("en-US", {
+                    weekday: "short",
+                    day: "numeric",
+                }),
+                sales,
+                transactions: dailyOrders.length,
+            };
+        });
+    }, [orders]);
     const displayedOrders = useMemo(() => {
         const search = searchTerm.trim().toLowerCase();
 
@@ -207,7 +254,48 @@ function SalesDashboard({ onBack }: SalesDashboardProps) {
                             <h2>{currency.format(stats.card)}</h2>
                         </article>
                     </section>
+                    <section className="dashboard-chart-card">
+                    <div className="dashboard-chart-header">
+                        <div>
+                        <h2>Daily Sales</h2>
+                        <p>Sales performance over the last 7 days</p>
+                        </div>
+                    </div>
 
+                    <div className="dashboard-chart">
+                        <ResponsiveContainer width="100%" height="100%">
+                        <BarChart
+                            data={chartData}
+                            margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+
+                            <XAxis dataKey="day" tick={{ fontSize: 12 }} />
+
+                            <YAxis
+                            tick={{ fontSize: 12 }}
+                            tickFormatter={(value: number) => `${value}`}
+                            />
+
+                            <Tooltip
+                            formatter={(value, name) => [
+                                name === "sales"
+                                ? `SAR ${Number(value).toFixed(2)}`
+                                : value,
+                                name === "sales" ? "Sales" : "Transactions",
+                            ]}
+                            />
+
+                            <Bar
+                            dataKey="sales"
+                            name="Sales"
+                            fill="#16a34a"
+                            radius={[6, 6, 0, 0]}
+                            />
+                        </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                    </section>
                     <section className="dashboard-recent-card">
                         <h2>Today's Recent Transactions</h2>
 
