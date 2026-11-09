@@ -145,7 +145,7 @@
   cursor: pointer;
 }
 .dashboard-search {
-  margin-bottom: 16px;
+  margin: 10px;
 }
 
 .dashboard-search input {
@@ -195,6 +195,30 @@
 .dashboard-chart {
   width: 100%;
   height: 300px;
+}
+.dashboard-export-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #16a34a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dashboard-export-button:hover:not(:disabled) {
+  background: #15803d;
+}
+
+.dashboard-export-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
 }
 
 @media (max-width: 600px) {

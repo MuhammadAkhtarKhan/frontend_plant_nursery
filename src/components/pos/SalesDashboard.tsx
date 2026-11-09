@@ -1,11 +1,11 @@
 import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
+    ResponsiveContainer,
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
 } from "recharts";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -15,10 +15,12 @@ import {
     RefreshCw,
     ShoppingCart,
     TrendingUp,
+    Download
 } from "lucide-react";
 import { getMyOrders } from "../../api/orderApi";
 import type { OrderResponse } from "../../api/orderApi";
 import "./SalesDashboard.css";
+
 
 interface SalesDashboardProps {
     onBack: () => void;
@@ -165,6 +167,60 @@ function SalesDashboard({ onBack }: SalesDashboardProps) {
         );
     }, [stats.recent, searchTerm]);
 
+    const exportSalesToCsv = () => {
+        const headers = [
+            "Order Number",
+            "Date",
+            "Payment Method",
+            "Status",
+            "Total Amount (SAR)",
+        ];
+
+        const rows = stats.recent.map((order) => [
+            order.orderNumber,
+            order.createdAt
+                ? new Date(order.createdAt).toLocaleString("en-GB")
+                : "",
+            order.paymentMethod === 1
+                ? "Cash"
+                : order.paymentMethod === 2
+                    ? "Card"
+                    : "Other",
+            order.orderStatus === 4
+                ? "Completed"
+                : order.orderStatus === 5
+                    ? "Cancelled"
+                    : "Other",
+            Number(order.totalAmount || 0).toFixed(2),
+        ]);
+
+        const csvContent = [headers, ...rows]
+            .map((row) =>
+                row
+                    .map((value) => `"${String(value).replace(/"/g, '""')}"`)
+                    .join(","),
+            )
+            .join("\r\n");
+
+        const blob = new Blob(["\uFEFF" + csvContent], {
+            type: "text/csv;charset=utf-8;",
+        });
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = `PlantNursery-Sales-${new Date()
+            .toISOString()
+            .slice(0, 10)}.csv`;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        URL.revokeObjectURL(url);
+    };
+
     if (loading) {
         return <main className="dashboard-page">Loading dashboard...</main>;
     }
@@ -184,7 +240,6 @@ function SalesDashboard({ onBack }: SalesDashboardProps) {
 
                 <div className="dashboard-heading">
                     <h1>Sales Dashboard</h1>
-                    <p>Today's sales performance</p>
                 </div>
                 <div className="dashboard-date-filter">
                     <label htmlFor="sales-date-filter">Sales period:</label>
@@ -208,6 +263,15 @@ function SalesDashboard({ onBack }: SalesDashboardProps) {
                         <option value="all">All Time</option>
                     </select>
                 </div>
+                <button
+                    type="button"
+                    className="dashboard-export-button"
+                    onClick={exportSalesToCsv}
+                    disabled={stats.recent.length === 0}
+                >
+                    <Download size={18} />
+                    Export CSV
+                </button>
                 <button
                     type="button"
                     className="dashboard-refresh-button"
@@ -255,57 +319,60 @@ function SalesDashboard({ onBack }: SalesDashboardProps) {
                         </article>
                     </section>
                     <section className="dashboard-chart-card">
-                    <div className="dashboard-chart-header">
-                        <div>
-                        <h2>Daily Sales</h2>
-                        <p>Sales performance over the last 7 days</p>
+                        <div className="dashboard-chart-header">
+                            <div>
+                                <h2>Daily Sales</h2>
+                                <p>Sales performance over the last 7 days</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="dashboard-chart">
-                        <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                            data={chartData}
-                            margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <div className="dashboard-chart">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart
+                                    data={chartData}
+                                    margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
 
-                            <XAxis dataKey="day" tick={{ fontSize: 12 }} />
+                                    <XAxis dataKey="day" tick={{ fontSize: 12 }} />
 
-                            <YAxis
-                            tick={{ fontSize: 12 }}
-                            tickFormatter={(value: number) => `${value}`}
-                            />
+                                    <YAxis
+                                        tick={{ fontSize: 12 }}
+                                        tickFormatter={(value: number) => `${value}`}
+                                    />
 
-                            <Tooltip
-                            formatter={(value, name) => [
-                                name === "sales"
-                                ? `SAR ${Number(value).toFixed(2)}`
-                                : value,
-                                name === "sales" ? "Sales" : "Transactions",
-                            ]}
-                            />
+                                    <Tooltip
+                                        formatter={(value, name) => [
+                                            name === "sales"
+                                                ? `SAR ${Number(value).toFixed(2)}`
+                                                : value,
+                                            name === "sales" ? "Sales" : "Transactions",
+                                        ]}
+                                    />
 
-                            <Bar
-                            dataKey="sales"
-                            name="Sales"
-                            fill="#16a34a"
-                            radius={[6, 6, 0, 0]}
-                            />
-                        </BarChart>
-                        </ResponsiveContainer>
-                    </div>
+                                    <Bar
+                                        dataKey="sales"
+                                        name="Sales"
+                                        fill="#16a34a"
+                                        radius={[6, 6, 0, 0]}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
                     </section>
                     <section className="dashboard-recent-card">
-                        <h2>Today's Recent Transactions</h2>
+                        <h2>
+                            {dateFilter === "today" ? "Today's Recent Transactions" : dateFilter === "7days" ? "Last 7 Days' Transactions"
+                                : dateFilter === "month" ? "This Month's Transactions" : "All-Time Transactions"}
+                        </h2>
 
                         {displayedOrders.length === 0 ? (
                             <p className="dashboard-empty">
                                 No sales recorded today.
                             </p>
                         ) : (
-                            <div className="dashboard-table-wrapper">
-                                <div className="dashboard-search">
+                            <>
+                             <div className="dashboard-search">
                                     <input
                                         type="search"
                                         placeholder="Search by order number..."
@@ -314,6 +381,8 @@ function SalesDashboard({ onBack }: SalesDashboardProps) {
                                         aria-label="Search transactions by order number"
                                     />
                                 </div>
+                            <div className="dashboard-table-wrapper">
+                               
                                 <table className="dashboard-table">
                                     <thead>
                                         <tr>
@@ -341,6 +410,8 @@ function SalesDashboard({ onBack }: SalesDashboardProps) {
                                     </tbody>
                                 </table>
                             </div>
+                            </>
+
                         )}
                     </section>
                 </>

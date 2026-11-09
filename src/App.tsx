@@ -55,6 +55,28 @@ function mapApiPlants(apiPlants: ApiPlant[]): Plant[] {
     };
   });
 }
+const DEFAULT_LOW_STOCK_THRESHOLD = 5;
+
+function getStockStatus(stockQuantity: number) {
+  if (stockQuantity <= 0) {
+    return {
+      label: "Out of Stock",
+      type: "out-of-stock",
+    };
+  }
+
+  if (stockQuantity <= DEFAULT_LOW_STOCK_THRESHOLD) {
+    return {
+      label: `Low Stock (${stockQuantity} left)`,
+      type: "low-stock",
+    };
+  }
+
+  return {
+    label: "In Stock",
+    type: "in-stock",
+  };
+}
 
 function PosApp() {
   const [currentPage, setCurrentPage] = useState<"pos" | "sales" | "dashboard">("pos");
@@ -399,7 +421,15 @@ function PosApp() {
                           <strong className="price">
                             SAR {plant.price.toFixed(2)}
                           </strong>
+                          {(() => {
+                            const stockStatus = getStockStatus(remainingStock);
 
+                            return (
+                              <span className={`stock-badge ${stockStatus.type}`}>
+                                {stockStatus.label}
+                              </span>
+                            );
+                          })()}
                           <button
                             className="add-button"
                             disabled={outOfStock}
