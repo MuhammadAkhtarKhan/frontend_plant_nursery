@@ -29,8 +29,12 @@ function Login({ onLogin }: LoginProps) {
 
       const roles = result.roles ?? [];
 
-      if (!roles.some((role) => role.toLowerCase() === "cashier")) {
-        setError("Access denied. Please sign in with a Cashier account.");
+      const hasAccess = roles.some((role) =>
+        ["admin", "cashier"].includes(role.toLowerCase()),
+      );
+
+      if (!hasAccess) {
+        setError("Access denied. Please sign in with an Admin or Cashier account.");
         return;
       }
 
@@ -53,7 +57,9 @@ function Login({ onLogin }: LoginProps) {
         </div>
 
         <h1>Plant Nursery</h1>
-        <p className="login-subtitle">Sign in to your cashier workspace</p>
+        <p className="login-subtitle">
+          Sign in to your workspace
+        </p>
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="email">Email address</label>
@@ -92,7 +98,7 @@ function Login({ onLogin }: LoginProps) {
         </form>
 
         <p className="login-footer">
-          Authorized cashier access only
+          Authorized Admin and Cashier access only
         </p>
       </section>
     </main>

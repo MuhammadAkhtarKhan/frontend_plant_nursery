@@ -1,3 +1,4 @@
+import AdminPanel from "./pages/AdminPanel";
 import SalesHistory from "./components/pos/SalesHistory";
 import SalesDashboard from "./components/pos/SalesDashboard";
 import Receipt from "./components/pos/Receipt";
@@ -18,6 +19,7 @@ import {
   ReceiptTextIcon,
   ReceiptText,
   TrendingUp,
+  LogOut,
 } from "lucide-react";
 import { getPlants } from "./api/plantApi";
 import { createPosOrder } from "./api/orderApi";
@@ -78,7 +80,11 @@ function getStockStatus(stockQuantity: number) {
   };
 }
 
-function PosApp() {
+type PosAppProps = {
+  onLogout: () => void;
+};
+
+function PosApp({ onLogout }: PosAppProps) {
   const [currentPage, setCurrentPage] = useState<"pos" | "sales" | "dashboard">("pos");
   const [plants, setPlants] = useState<Plant[]>([]);
   const [loading, setLoading] = useState(true);
@@ -310,6 +316,14 @@ function PosApp() {
             <p>POS Terminal</p>
           </div>
         </div>
+        <button
+          type="button"
+          className="sales-history-nav-button"
+          onClick={onLogout}
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
       </header>
 
       <main className="pos-layout">
@@ -629,6 +643,7 @@ function PosApp() {
 
 
 function App() {
+
   const [authenticated, setAuthenticated] = useState(() => {
     const token = localStorage.getItem("token");
 
@@ -668,12 +683,17 @@ function App() {
     localStorage.setItem("roles", JSON.stringify(roles));
     setAuthenticated(true);
   }
+  function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("roles");
 
+    setAuthenticated(false);
+  }
   if (!authenticated) {
     return <Login onLogin={handleLogin} />;
   }
 
-  return <PosApp />;
+  return <PosApp onLogout={handleLogout} />;
 }
 
 export default App;
