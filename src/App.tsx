@@ -643,28 +643,26 @@ function PosApp({ onLogout }: PosAppProps) {
 
 
 function App() {
+  const [roles, setRoles] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("roles") || "[]");
+    } catch {
+      return [];
+    }
+  });
 
   const [authenticated, setAuthenticated] = useState(() => {
     const token = localStorage.getItem("token");
 
-    try {
-      const roles: string[] = JSON.parse(
-        localStorage.getItem("roles") || "[]",
-      );
-
-      return Boolean(
-        token &&
-        roles.some((role) => role.toLowerCase() === "cashier"),
-      );
-    } catch {
-      return false;
-    }
+    return Boolean(token);
   });
 
   useEffect(() => {
     function handleUnauthorized() {
       localStorage.removeItem("token");
       localStorage.removeItem("roles");
+
+      setRoles([]);
       setAuthenticated(false);
     }
 
@@ -678,22 +676,43 @@ function App() {
     };
   }, []);
 
-  function handleLogin(token: string, roles: string[]) {
+  function handleLogin(token: string, userRoles: string[]) {
     localStorage.setItem("token", token);
-    localStorage.setItem("roles", JSON.stringify(roles));
+    localStorage.setItem("roles", JSON.stringify(userRoles));
+
+    setRoles(userRoles);
     setAuthenticated(true);
   }
+
   function handleLogout() {
     localStorage.removeItem("token");
     localStorage.removeItem("roles");
 
+    setRoles([]);
     setAuthenticated(false);
   }
+
   if (!authenticated) {
     return <Login onLogin={handleLogin} />;
   }
 
-  return <PosApp onLogout={handleLogout} />;
+  const isAdmin = roles.some(
+    (role) => role.toLowerCase() === "admin",
+  );
+
+  const isCashier = roles.some(
+    (role) => role.toLowerCase() === "cashier",
+  );
+
+  if (isAdmin) {
+    return <AdminPanel onLogout={handleLogout} />;
+  }
+
+  if (isCashier) {
+    return <PosApp onLogout={handleLogout} />;
+  }
+
+  return <Login onLogin={handleLogin} />;
 }
 
 export default App;
