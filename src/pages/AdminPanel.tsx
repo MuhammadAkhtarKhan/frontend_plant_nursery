@@ -8,6 +8,7 @@ import {
   Boxes,
   LogOut,
 } from "lucide-react";
+import PlantsManagement from "../components/admin/PlantsManagement";
 
 type AdminPanelProps = {
   onLogout: () => void;
@@ -111,15 +112,7 @@ function AdminPanel({ onLogout }: AdminPanelProps) {
             </div>
           )}
 
-          {currentPage === "plants" && (
-            <div className="admin-placeholder">
-              <Leaf size={32} />
-              <h2>Plants Management</h2>
-              <p>
-                Manage plants, prices, descriptions, and images.
-              </p>
-            </div>
-          )}
+          {currentPage === "plants" && <PlantsManagement />}
 
           {currentPage === "categories" && (
             <div className="admin-placeholder">

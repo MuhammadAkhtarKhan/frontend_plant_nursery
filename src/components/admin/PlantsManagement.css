@@ -1,0 +1,190 @@
+
+.plants-management {
+  width: 100%;
+}
+
+.plants-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.plants-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 320px;
+  max-width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dce3dd;
+  border-radius: 8px;
+  color: #718078;
+  background: #ffffff;
+}
+
+.plants-search input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.plants-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.plants-refresh-button,
+.plants-add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid #dce3dd;
+  border-radius: 8px;
+  background: white;
+  color: #365a43;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.plants-refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.plants-add-button {
+  border-color: #24613e;
+  background: #24613e;
+  color: white;
+}
+
+.plants-add-button:hover {
+  background: #194b2e;
+}
+
+.plants-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.plants-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.plants-table th {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8faf8;
+  color: #647067;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.plants-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #edf0ed;
+  color: #374151;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.plants-product-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.plants-product-cell strong {
+  display: block;
+  color: #1f2937;
+}
+
+.plants-product-cell small {
+  display: block;
+  margin-top: 4px;
+  color: #8a948d;
+  font-size: 12px;
+}
+
+.plants-product-image,
+.plants-image-placeholder {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.plants-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8f1e9;
+  font-size: 23px;
+}
+
+.plants-status {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.plants-status.active {
+  background: #e1f3e7;
+  color: #237342;
+}
+
+.plants-status.inactive {
+  background: #fce8e8;
+  color: #b42318;
+}
+
+.plants-error {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fce8e8;
+  color: #b42318;
+  font-size: 14px;
+}
+
+.plants-message,
+.plants-empty {
+  padding: 35px 15px !important;
+  color: #718078 !important;
+  text-align: center;
+}
+
+.plants-results {
+  margin-top: 16px;
+  color: #7b857e;
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  .plants-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .plants-search {
+    width: auto;
+  }
+
+  .plants-toolbar-actions {
+    justify-content: flex-end;
+  }
+}
